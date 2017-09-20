@@ -63,6 +63,8 @@ void jetSubstructure(string inputDir, float radius=0.4, int mode=0, float energy
 
     int nTotal=0;
     int nPass=0;
+    int k;
+    int j;
   //  int ntemp_histos=sizeof(histonames)/sizeof(histonames[0]);
   const int nhistos=3;//ntemp_histos;
 
@@ -109,16 +111,8 @@ void jetSubstructure(string inputDir, float radius=0.4, int mode=0, float energy
     for(int ih=0; ih < nhistos; ih++)
     sub[ih] = caloTree.GetPtrFloat(Form("j_%s",histonames[ih].data()));
     
-      float k;
-      float j;
-    for(int i=0; i< calo_njets; i++){
-
-        k=k+i;
-      
-        if(tau21[i]< 0.3)
-        j=j+i;
-      cout<<"efficiency="<<j/k<<endl;
-      
+      for(int i=0; i< calo_njets; i++){
+ 
       if(fabs(calo_jeta[i])>1.1)continue;
 
       int findGenMatch=-1;
@@ -136,18 +130,19 @@ void jetSubstructure(string inputDir, float radius=0.4, int mode=0, float energy
       }
 
       if(findGenMatch<0)continue;
-        
-    
 
-      for(int ih=0; ih < nhistos; ih++)    
+    for(int ih=0; ih < nhistos; ih++)
         h_sub[ih]->Fill(sub[ih][i]);
+        nTotal++;
+          
+        if(tau21[i]< 0.9)
+        nPass++;
+          
         
-
     } // end of loop over calo jets
-    
-
+    cout<<"efficiency="<<nPass/nTotal<<endl;
   } // end loop of entries
-     
+  
     
 
   string outputFile = inputDir + "/radius" + Form("%0.1f",radius)+ "_jetsubstructure_mode"+Form("%d",mode)+"_"+treeName + "_"+Form("%.1f",energy)+"GeV.root";
